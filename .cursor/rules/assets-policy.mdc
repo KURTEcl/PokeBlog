@@ -1,0 +1,12 @@
+---
+description: Asset and license policy for scene art
+alwaysApply: true
+---
+
+# Assets policy
+
+- `recursos/` is gitignored — never commit Pokémon Essentials dumps.
+- Do not add Nintendo / Essentials / official Pokémon rips under `public/`.
+- BYO Essentials copy map: `docs/ASSETS.md` → `public/scene-assets/essentials/` (also gitignored).
+- Committed demo art under `public/scene-assets/{tiles,objects,player,placeholders}/` was legacy CC crops (removed). The home uses `essentials/` from `pnpm import:essentials`.
+- Update `/asset-credits` when demo licenses change.

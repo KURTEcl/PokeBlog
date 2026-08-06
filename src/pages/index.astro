@@ -1,0 +1,172 @@
+---
+import { getSiteSettings } from "emdash";
+import { EmDashHead, EmDashBodyStart, EmDashBodyEnd } from "emdash/ui";
+import { createPublicPageContext } from "emdash/page";
+import { Font } from "astro:assets";
+import { createPokemonRoomScene, type SceneDefinition } from "@poke-emdash/scene-core";
+import SceneHome from "../components/scene/SceneHome";
+import { resolveBlogSiteIdentity } from "../utils/site-identity";
+import "../components/scene/scene-home.css";
+
+const settings = await getSiteSettings();
+const { siteTitle, siteTagline } = resolveBlogSiteIdentity(settings);
+const fullTitle = siteTitle;
+
+let scene: SceneDefinition | null = null;
+try {
+	const origin = Astro.url.origin;
+	const res = await fetch(`${origin}/_emdash/api/plugins/scene-builder/public-home`);
+	if (res.ok) {
+		const payload = (await res.json()) as { data?: { scene?: SceneDefinition }; scene?: SceneDefinition };
+		scene = payload.data?.scene ?? payload.scene ?? null;
+	}
+} catch {
+	scene = null;
+}
+if (!scene) scene = createPokemonRoomScene();
+
+const pageCtx = createPublicPageContext({
+	Astro,
+	kind: "custom",
+	pageType: "website",
+	title: fullTitle,
+	pageTitle: siteTitle,
+	description: siteTagline,
+	siteName: siteTitle,
+});
+---
+
+<!doctype html>
+<html lang="es" class="scene-page">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<title>{fullTitle}</title>
+		<meta name="description" content={siteTagline ?? ""} />
+		<Font cssVariable="--font-body" />
+		<EmDashHead page={pageCtx} />
+		<style is:global>
+			html.scene-page,
+			html.scene-page body {
+				width: 100%;
+				height: 100%;
+				margin: 0;
+				overflow: hidden;
+				background: #0e0e14;
+			}
+
+			/* Instant boot loader — paints before JS/React bundle */
+			#scene-boot-loader {
+				position: fixed;
+				inset: 0;
+				z-index: 20;
+				display: grid;
+				place-items: center;
+				background: #0e0e14;
+				color: #d8d8e8;
+			}
+
+			#scene-boot-loader .scene-loader-card {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 1rem;
+				padding: 1.5rem;
+				text-align: center;
+			}
+
+			#scene-boot-loader .scene-loader-logo--placeholder {
+				display: grid;
+				place-items: center;
+				width: 4.5rem;
+				height: 4.5rem;
+				border-radius: 1rem;
+				background: #1a1a24;
+				font-size: 2rem;
+				color: #8eb7ff;
+				animation: scene-boot-spin 1.2s linear infinite;
+			}
+
+			#scene-boot-loader .scene-loader-message {
+				margin: 0;
+				max-width: 16rem;
+				font-size: 0.95rem;
+				letter-spacing: 0.01em;
+			}
+
+			#scene-boot-loader .scene-loader-dots {
+				display: flex;
+				gap: 0.35rem;
+			}
+
+			#scene-boot-loader .scene-loader-dots span {
+				width: 0.45rem;
+				height: 0.45rem;
+				border-radius: 999px;
+				background: #6aa3ff;
+				animation: scene-boot-pulse 1s ease-in-out infinite;
+			}
+
+			#scene-boot-loader .scene-loader-dots span:nth-child(2) {
+				animation-delay: 0.15s;
+			}
+
+			#scene-boot-loader .scene-loader-dots span:nth-child(3) {
+				animation-delay: 0.3s;
+			}
+
+			@keyframes scene-boot-spin {
+				to {
+					transform: rotate(360deg);
+				}
+			}
+
+			@keyframes scene-boot-pulse {
+				0%,
+				100% {
+					opacity: 0.35;
+					transform: translateY(0);
+				}
+				50% {
+					opacity: 1;
+					transform: translateY(-2px);
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<EmDashBodyStart page={pageCtx} />
+		<div id="scene-boot-loader" role="status" aria-live="polite" aria-busy="true">
+			<div class="scene-loader-card">
+				<div class="scene-loader-logo scene-loader-logo--placeholder" aria-hidden="true">◓</div>
+				<p class="scene-loader-message">Organizando carpeta</p>
+				<div class="scene-loader-dots" aria-hidden="true">
+					<span></span>
+					<span></span>
+					<span></span>
+				</div>
+			</div>
+		</div>
+		<script is:inline>
+			(function () {
+				var msgs = [
+					"Organizando carpeta",
+					"Buscando challa",
+					"Cambiando los sleeves",
+					"Limpiando el playmat",
+				];
+				var el = document.querySelector("#scene-boot-loader .scene-loader-message");
+				if (!el || msgs.length < 2) return;
+				var i = 0;
+				setInterval(function () {
+					i = (i + 1) % msgs.length;
+					el.textContent = msgs[i];
+				}, 900);
+			})();
+		</script>
+		<main>
+			<SceneHome client:only="react" initialScene={scene} />
+		</main>
+		<EmDashBodyEnd page={pageCtx} />
+	</body>
+</html>

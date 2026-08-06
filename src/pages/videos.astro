@@ -1,0 +1,63 @@
+---
+import {
+	getTerm,
+	getEmDashCollection,
+	getTermsForEntries,
+} from "emdash";
+import Base from "../layouts/Base.astro";
+import PostCard from "../components/PostCard.astro";
+import { getReadingTime } from "../utils/reading-time";
+import "../styles/archive.css";
+
+const term = await getTerm("category", "videos");
+
+const { entries: posts, cacheHint } = await getEmDashCollection("posts", {
+	where: term ? { category: "videos" } : undefined,
+	orderBy: { published_at: "desc" },
+});
+
+if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+
+const tagsByEntry = await getTermsForEntries(
+	"posts",
+	posts.map((p) => p.data.id),
+	"tag",
+);
+const filteredPosts = posts.map((post) => ({
+	post,
+	tags: tagsByEntry.get(post.data.id) ?? [],
+}));
+---
+
+<Base title="Videos" description="Video posts and match coverage">
+	<section class="archive-section">
+		<header class="archive-header">
+			<span class="archive-label">Section</span>
+			<h1 class="archive-title">Videos</h1>
+			<p class="archive-count">
+				{filteredPosts.length}
+				{filteredPosts.length === 1 ? " post" : " posts"}
+			</p>
+		</header>
+
+		{
+			filteredPosts.length === 0 ? (
+				<p class="no-posts">No video posts yet. Tag posts with the Videos category.</p>
+			) : (
+				<div class="posts-grid">
+					{filteredPosts.map(({ post, tags }) => (
+						<PostCard
+							title={post.data.title}
+							excerpt={post.data.excerpt}
+							featuredImage={post.data.featured_image}
+							href={`/posts/${post.id}`}
+							date={post.data.publishedAt ?? undefined}
+							readingTime={getReadingTime(post.data.content)}
+							tags={tags}
+						/>
+					))}
+				</div>
+			)
+		}
+	</section>
+</Base>

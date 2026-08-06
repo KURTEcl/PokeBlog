@@ -1,0 +1,15 @@
+---
+description: PokeBlog monorepo map, required plugins, English identifiers
+alwaysApply: true
+---
+
+# PokeBlog core
+
+- Open repo root `PokeBlog/`. Packages live in `packages/*`.
+- Required EmDash plugins (must stay registered in `astro.config.mjs`):
+  - `@poke-emdash/plugin-theme-settings`
+  - `@poke-emdash/plugin-pokemon-tcg` (id `pokemon-tcg`)
+  - `@poke-emdash/plugin-scene-builder` (id `scene-builder`)
+- Identifiers, files, slugs, routes: **English**. UI copy may be Spanish.
+- Do not replace the Phaser scene home with a normal blog grid unless explicitly asked.
+- Read `AGENTS.md` and `docs/ASSETS.md` before structural changes.

@@ -1,0 +1,14 @@
+---
+description: Pokémon TCG EmDash plugin conventions
+globs: packages/plugin-pokemon-tcg/**
+alwaysApply: false
+---
+
+# plugin-pokemon-tcg
+
+- Package: `@poke-emdash/plugin-pokemon-tcg`
+- Plugin id and API prefix: `pokemon-tcg` → `/_emdash/api/plugins/pokemon-tcg/...`
+- Export: `pokemonTcgPlugin()`
+- Admin widget id: `pokemon-shortcuts`
+- Keep PT block type keys (`pokemonDecklist`, `pokemonCard`, …) stable unless migrating content.
+- Allowed hosts: `api.tcgdex.net`, `pokeapi.co`

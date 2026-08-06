@@ -1,0 +1,193 @@
+---
+import Base from "../layouts/Base.astro";
+
+type Pokemon = { name: string; speciesId?: number; spriteId?: number };
+type Deck = { id: string; name: string; format: string };
+type Tournament = { id: string; deckId: string; name: string; playedAt: string; endedAt?: string; category?: string; format?: string; placement?: string };
+type Match = {
+	id: string;
+	tournamentId?: string;
+	deckId: string;
+	playedAt: string;
+	eventName?: string;
+	round?: number;
+	opponentArchetype?: string;
+	opponentPokemon?: Pokemon[];
+	result: "win" | "loss" | "draw";
+	videoUrl?: string;
+	games?: Array<{ result: "win" | "loss" | "draw"; wentFirst?: boolean }>;
+};
+
+const SPRITE_BASE = "https://cdn.tcghub.cl/sprites/sprites/pokemon";
+
+async function pluginData(route: string) {
+	const response = await fetch(new URL(`/_emdash/api/plugins/pokemon-tcg/${route}`, Astro.url.origin));
+	if (!response.ok) return {};
+	const body = await response.json();
+	return body.data ?? body;
+}
+
+function spriteUrl(pokemon: Pokemon) {
+	const id = pokemon.spriteId ?? pokemon.speciesId;
+	return id ? `${SPRITE_BASE}/${id}.png` : undefined;
+}
+
+function resultLabel(result: Match["result"]) {
+	return result === "win" ? "W" : result === "loss" ? "L" : "T";
+}
+
+const [deckData, tournamentData, matchData] = await Promise.all([pluginData("decks"), pluginData("tournaments"), pluginData("matches")]);
+const decks: Deck[] = deckData.items ?? [];
+const tournaments: Tournament[] = tournamentData.items ?? [];
+const allMatches: Match[] = matchData.items ?? [];
+const categories = [
+	{ value: "online", label: "Online" },
+	{ value: "league", label: "Liga" },
+	{ value: "challenge", label: "League Challenge" },
+	{ value: "cup", label: "League Cup" },
+	{ value: "regional", label: "Regional" },
+	{ value: "international", label: "Internacional" },
+	{ value: "casual", label: "Casual" },
+	{ value: "other", label: "Otro" },
+] as const;
+const deckId = Astro.url.searchParams.get("deckId") ?? "";
+const format = Astro.url.searchParams.get("format") ?? "";
+const category = Astro.url.searchParams.get("category") ?? "";
+const from = Astro.url.searchParams.get("from") ?? "";
+const to = Astro.url.searchParams.get("to") ?? "";
+const started = Astro.url.searchParams.get("started") ?? "";
+const tournamentMatchesFilters = (tournament: Tournament) =>
+	(!format || tournament.format === format) &&
+	(!category || (tournament.category ?? "other") === category) &&
+	(!deckId || tournament.deckId === deckId) &&
+	(!from || tournament.playedAt >= from) &&
+	(!to || tournament.playedAt <= to);
+const allowedTournamentIds = new Set(tournaments.filter(tournamentMatchesFilters).map((tournament) => tournament.id));
+const matches = allMatches.filter((match) =>
+	(!deckId || match.deckId === deckId) &&
+	(!from || match.playedAt >= from) &&
+	(!to || match.playedAt <= to) &&
+	((!format && !category) || (!!match.tournamentId && allowedTournamentIds.has(match.tournamentId))) &&
+	(!started || match.games?.some((game) => started === "first" ? game.wentFirst === true : game.wentFirst === false)),
+);
+const wins = matches.filter((match) => match.result === "win").length;
+const losses = matches.filter((match) => match.result === "loss").length;
+const draws = matches.length - wins - losses;
+const matchupMap = new Map<string, { wins: number; losses: number; draws: number; total: number; pokemon: Pokemon[] }>();
+for (const match of matches) {
+	const key = match.opponentArchetype || "Sin identificar";
+	const item = matchupMap.get(key) ?? { wins: 0, losses: 0, draws: 0, total: 0, pokemon: match.opponentPokemon ?? [] };
+	item.total++;
+	item[match.result === "win" ? "wins" : match.result === "loss" ? "losses" : "draws"]++;
+	if (!item.pokemon.length && match.opponentPokemon?.length) item.pokemon = match.opponentPokemon;
+	matchupMap.set(key, item);
+}
+const matchups = [...matchupMap.entries()].sort((a, b) => b[1].total - a[1].total);
+const deckNames = new Map(decks.map((deck) => [deck.id, deck.name]));
+const listedTournaments = tournaments.filter(tournamentMatchesFilters);
+---
+
+<Base title="Resultados y matchups" description="Torneos, rondas y estadísticas de Pokémon TCG.">
+	<section class="results-page">
+		<header class="results-hero"><p>RENDIMIENTO COMPETITIVO</p><h1>Torneos y matchups</h1><span>Resultados públicos registrados desde los decklists del blog.</span></header>
+		<form class="filters" method="get">
+			<label>Decklist<select name="deckId"><option value="">Todas</option>{decks.map((deck) => <option value={deck.id} selected={deck.id === deckId}>{deck.name}</option>)}</select></label>
+			<label>Formato<select name="format"><option value="">Todos</option>{["standard","expanded","glc","custom"].map((item) => <option value={item} selected={item === format}>{item.toUpperCase()}</option>)}</select></label>
+			<label>Tipo<select name="category"><option value="">Todos</option>{categories.map((item) => <option value={item.value} selected={item.value === category}>{item.label}</option>)}</select></label>
+			<label>Desde<input type="date" name="from" value={from} /></label><label>Hasta<input type="date" name="to" value={to} /></label>
+			<label>Inicio<select name="started"><option value="">Cualquiera</option><option value="first" selected={started === "first"}>Comenzó el jugador</option><option value="second" selected={started === "second"}>Comenzó el rival</option></select></label>
+			<button type="submit">Aplicar filtros</button><a href="/results">Limpiar</a>
+		</form>
+		<div class="stats"><article><strong>{matches.length}</strong><span>rondas</span></article><article><strong>{wins}</strong><span>W</span></article><article><strong>{losses}</strong><span>L</span></article><article><strong>{draws}</strong><span>T</span></article><article><strong>{matches.length ? Math.round(wins / matches.length * 1000) / 10 : 0}%</strong><span>win rate</span></article></div>
+		<div class="grid">
+			<section>
+				<h2>Matchups</h2>
+				{matchups.length ? <div class="table-wrap"><table>
+					<thead><tr><th>Rival</th><th>Registro</th><th>Win rate</th></tr></thead>
+					<tbody>{matchups.map(([name, item]) => {
+						const sprites = item.pokemon.slice(0, 2).flatMap((pokemon) => {
+							const src = spriteUrl(pokemon);
+							return src ? [{ src, label: pokemon.name || name }] : [];
+						});
+						return <tr>
+							<th title={name}>
+								{sprites.length
+									? <span class="sprites">{sprites.map((sprite) => <img src={sprite.src} alt={sprite.label} title={sprite.label} width="36" height="36" loading="lazy" />)}</span>
+									: "—"}
+							</th>
+							<td>{item.wins}-{item.losses}-{item.draws}</td>
+							<td>{Math.round(item.wins / item.total * 1000) / 10}%</td>
+						</tr>;
+					})}</tbody>
+				</table></div> : <p class="empty">No hay rondas para estos filtros.</p>}
+			</section>
+			<section>
+				<h2>Torneos</h2>
+				{listedTournaments.length ? <div class="table-wrap"><table>
+					<thead><tr><th>Fecha</th><th>Torneo</th><th>Decklist</th><th>Posición</th></tr></thead>
+					<tbody>{listedTournaments.map((tournament) => <tr>
+						<td>{tournament.playedAt}</td>
+						<th><a class="tournament-link" href={`/results/${tournament.id}`}>{tournament.name}</a></th>
+						<td>{deckNames.get(tournament.deckId) ?? "Decklist"}</td>
+						<td>{tournament.placement ?? "—"}</td>
+					</tr>)}</tbody>
+				</table></div> : <p class="empty">Todavía no hay torneos públicos.</p>}
+			</section>
+			<section>
+				<h2>Rondas</h2>
+				{matches.length ? <div class="table-wrap"><table>
+					<thead><tr><th>Fecha</th><th>Torneo</th><th>Ronda</th><th>Rival</th><th>Resultado</th><th>Video</th></tr></thead>
+					<tbody>{matches.slice().sort((a, b) => b.playedAt.localeCompare(a.playedAt) || (b.round ?? 0) - (a.round ?? 0)).map((match) => <tr>
+						<td>{match.playedAt}</td>
+						<th>{match.tournamentId ? <a class="tournament-link" href={`/results/${match.tournamentId}`}>{match.eventName ?? "Torneo"}</a> : (match.eventName ?? "—")}</th>
+						<td>{match.round ?? "—"}</td>
+						<td title={match.opponentArchetype ?? undefined}>
+							{(() => {
+								const sprites = (match.opponentPokemon ?? []).slice(0, 2).flatMap((pokemon) => {
+									const src = spriteUrl(pokemon);
+									return src ? [{ src, label: pokemon.name }] : [];
+								});
+								return sprites.length
+									? <span class="sprites">{sprites.map((sprite) => <img src={sprite.src} alt={sprite.label} title={sprite.label} width="36" height="36" loading="lazy" />)}</span>
+									: "—";
+							})()}
+						</td>
+						<td>{resultLabel(match.result)}</td>
+						<td>{match.videoUrl ? <a class="video-link" href={match.videoUrl} target="_blank" rel="noopener noreferrer">Ver video</a> : "—"}</td>
+					</tr>)}</tbody>
+				</table></div> : <p class="empty">No hay rondas para estos filtros.</p>}
+			</section>
+		</div>
+	</section>
+</Base>
+
+<style>
+	.results-page{width:min(1180px,calc(100% - 2rem));margin:0 auto;padding:clamp(3rem,8vw,7rem) 0}
+	.results-hero{max-width:720px;margin-bottom:2rem}
+	.results-hero p{font-size:.72rem;letter-spacing:.15em;opacity:.6}
+	.results-hero h1{font-size:clamp(2.4rem,7vw,5.5rem);letter-spacing:-.055em;line-height:.95;margin:.5rem 0 1rem}
+	.results-hero span{opacity:.65}
+	.filters{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:.75rem;padding:1rem;border:1px solid color-mix(in srgb,currentColor 14%,transparent);border-radius:1rem}
+	.filters label{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em}
+	.filters select,.filters input{display:block;width:100%;min-height:42px;margin-top:.4rem;border:1px solid color-mix(in srgb,currentColor 18%,transparent);border-radius:.55rem;padding:.55rem;background:transparent;color:inherit}
+	.filters button,.filters a{min-height:42px;border-radius:999px;padding:.65rem 1rem;display:grid;place-items:center;font:inherit;font-weight:700}
+	.filters button{border:0;background:var(--color-text);color:var(--color-bg);cursor:pointer}
+	.filters a{border:1px solid currentColor;color:inherit;text-decoration:none}
+	.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:.75rem;margin:1rem 0 3rem}
+	.stats article{border:1px solid color-mix(in srgb,currentColor 14%,transparent);border-radius:1rem;padding:1.2rem}
+	.stats strong{display:block;font-size:2rem}
+	.stats span{font-size:.72rem;opacity:.6;text-transform:uppercase}
+	.grid{display:grid;gap:3rem}
+	.grid h2{font-size:1.4rem}
+	.table-wrap{overflow-x:auto;border:1px solid color-mix(in srgb,currentColor 14%,transparent);border-radius:1rem}
+	table{width:100%;min-width:540px;border-collapse:collapse;font-size:.82rem}
+	th,td{text-align:left;padding:.8rem 1rem;border-bottom:1px solid color-mix(in srgb,currentColor 10%,transparent);vertical-align:middle}
+	thead th{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;opacity:.6}
+	.empty{opacity:.6}
+	.sprites{display:inline-flex;align-items:center}
+	.sprites img{width:36px;height:36px;object-fit:contain}
+	.sprites img+img{margin-left:-.55rem}
+	.tournament-link,.video-link{color:var(--color-brand);font-weight:600;text-decoration:none}
+	.tournament-link:hover,.video-link:hover{text-decoration:underline}
+	@media(max-width:760px){.filters{grid-template-columns:1fr 1fr}.stats{grid-template-columns:repeat(2,1fr)}.results-page{width:min(100% - 1rem,1180px)}}
+</style>

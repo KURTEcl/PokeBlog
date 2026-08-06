@@ -1,0 +1,16 @@
+---
+description: Phaser 4 scene home and scene-core conventions
+globs: "**/scene*/**,**/phaserAdapter.ts,packages/scene-*/**,packages/plugin-scene-builder/**"
+alwaysApply: false
+---
+
+# Scene / Phaser
+
+- Runtime uses **Phaser 4**; keep `src/components/scene/phaserAdapter.ts` on Phaser 4 APIs.
+- Home is fullscreen (`100dvh`, no document scroll); viewport fills available screen area.
+- `presentation.camera.mode`: `fit-room` (small maps) or `follow-player` (large gyms).
+- Blog content from interactions opens in the **side panel** (`presentation: "side-panel"`).
+- Demo factory: `createPokemonRoomScene` in `@poke-emdash/scene-core` (English symbol).
+- New admin scenes: `createSceneFromTemplate()` — see `docs/SCENE_ROOMS.md`.
+- Player presets: `boy` / `girl` asset ids; document Essentials paths in `docs/ASSETS.md`.
+- Pathfinding + keyboard + mobile D-pad + pointer click-to-move must remain working.

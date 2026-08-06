@@ -1,0 +1,51 @@
+---
+import DecklistBlock from "@poke-emdash/plugin-pokemon-tcg/DecklistBlock.astro";
+import Base from "../layouts/Base.astro";
+type Deck = { id:string; name:string; archetypeId:string; archetypeName:string; format:string; totalCards:number; cards:Array<{quantity:number;displayPrinting:{name:string};importedPrinting:{name:string}}> };
+type Archetype = { id:string; name:string };
+async function pluginData(route:string){const response=await fetch(new URL(`/_emdash/api/plugins/pokemon-tcg/${route}`,Astro.url.origin));if(!response.ok)return{};const body=await response.json();return body.data??body}
+const [deckData,archetypeData]=await Promise.all([pluginData("decks"),pluginData("archetypes")]);
+const allDecks:Deck[]=deckData.items??[];const archetypes:Archetype[]=archetypeData.items??[];
+const card=(Astro.url.searchParams.get("card")??"").trim().toLocaleLowerCase();const archetypeId=Astro.url.searchParams.get("archetypeId")??"";const format=Astro.url.searchParams.get("format")??"";
+const decks=allDecks.filter((deck)=>(!card||deck.cards.some((item)=>(item.displayPrinting.name||item.importedPrinting.name).toLocaleLowerCase().includes(card)))&&(!archetypeId||deck.archetypeId===archetypeId)&&(!format||deck.format===format));
+---
+<Base title="Decklists Pokémon" description="Busca listas por carta, arquetipo o formato.">
+<section class="catalog"><header><p>CATÁLOGO POKÉMON TCG</p><h1>Decklists</h1><span>Encuentra todas las listas que utilizan una carta o pertenecen a un arquetipo.</span></header>
+<form method="get"><label>Carta<input type="search" name="card" value={Astro.url.searchParams.get("card")??""} placeholder="Zoroark, Rare Candy…" /></label><label>Arquetipo<select name="archetypeId"><option value="">Todos</option>{archetypes.map((item)=><option value={item.id} selected={item.id===archetypeId}>{item.name}</option>)}</select></label><label>Formato<select name="format"><option value="">Todos</option>{["standard","expanded","glc","custom"].map((item)=><option value={item} selected={item===format}>{item.toUpperCase()}</option>)}</select></label><button type="submit">Buscar</button><a href="/decklists">Limpiar</a></form>
+<p class="count">{decks.length} {decks.length===1?"lista encontrada":"listas encontradas"}</p>
+<div class="deck-grid">{decks.map((deck)=><article class="deck-card" data-open-deck={`catalog-deck-${deck.id}`} role="button" tabindex="0" aria-controls={`catalog-deck-${deck.id}`} aria-haspopup="dialog" aria-label={`Visualizar ${deck.name}`}><p>{deck.format.toUpperCase()} · {deck.totalCards} CARTAS</p><h2>{deck.name}</h2><span>{deck.archetypeName}</span>{card&&<ul>{deck.cards.filter((item)=>(item.displayPrinting.name||item.importedPrinting.name).toLocaleLowerCase().includes(card)).map((item)=><li><strong>{item.quantity}×</strong> {item.displayPrinting.name||item.importedPrinting.name}</li>)}</ul>}</article>)}</div>
+{decks.map((deck)=>(
+<dialog class="deck-modal" id={`catalog-deck-${deck.id}`} aria-labelledby={`catalog-deck-title-${deck.id}`}>
+	<div class="deck-modal__content">
+		<DecklistBlock chrome="modal" titleId={`catalog-deck-title-${deck.id}`} node={{ deckId: deck.id, displayMode: "both", showResults: false }} />
+	</div>
+</dialog>
+))}
+</section></Base>
+<script>
+	document.addEventListener("click", (event) => {
+		const target = event.target as HTMLElement;
+		const openCard = target.closest<HTMLElement>(".deck-card[data-open-deck]");
+		if (openCard?.dataset.openDeck) {
+			const dialog = document.getElementById(openCard.dataset.openDeck) as HTMLDialogElement | null;
+			// ponytail: defer so the same click doesn't light-dismiss the freshly opened dialog
+			queueMicrotask(() => dialog?.showModal());
+			return;
+		}
+		const closeButton = target.closest<HTMLButtonElement>("[data-close-deck]");
+		if (closeButton) { closeButton.closest<HTMLDialogElement>("dialog")?.close(); return; }
+		if (target instanceof HTMLDialogElement && target.classList.contains("deck-modal")) target.close();
+	});
+	document.addEventListener("keydown", (event) => {
+		if (event.key !== "Enter" && event.key !== " ") return;
+		const openCard = (event.target as HTMLElement).closest<HTMLElement>(".deck-card[data-open-deck]");
+		if (!openCard?.dataset.openDeck) return;
+		event.preventDefault();
+		(document.getElementById(openCard.dataset.openDeck) as HTMLDialogElement | null)?.showModal();
+	});
+</script>
+<style>
+.catalog{width:min(1152px,calc(100% - 2rem));margin:auto;padding:clamp(3rem,8vw,7rem) 0}.catalog>header{max-width:700px;margin-bottom:2rem}.catalog header p{font-size:.72rem;letter-spacing:.15em;opacity:.6}.catalog h1{font-size:clamp(3rem,8vw,6rem);letter-spacing:-.06em;line-height:.9;margin:.5rem 0 1rem}.catalog header span,.count{opacity:.65}.catalog form{display:grid;grid-template-columns:2fr 1fr 1fr auto auto;gap:.75rem;align-items:end;padding:1rem;border:1px solid var(--color-border);border-radius:1rem}.catalog label{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em}.catalog input,.catalog select{display:block;width:100%;min-height:44px;margin-top:.4rem;border:1px solid var(--color-border);border-radius:.55rem;background:transparent;color:inherit;padding:.6rem}.catalog form button,.catalog form a{min-height:44px;border-radius:999px;padding:.65rem 1.1rem;display:grid;place-items:center;font:inherit;font-weight:700}.catalog form button{border:0;background:var(--color-text);color:var(--color-bg)}.catalog form a{border:1px solid currentColor;color:inherit;text-decoration:none}.count{margin:2rem 0 1rem}.deck-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.deck-grid article{border:1px solid var(--color-border);border-radius:1rem;padding:1.3rem;cursor:pointer}.deck-grid article:hover{background:color-mix(in srgb,currentColor 5%,transparent)}.deck-grid article:focus-visible{outline:2px solid currentColor;outline-offset:2px}.deck-grid article>p{font-size:.68rem;letter-spacing:.08em;opacity:.55}.deck-grid h2{margin:.6rem 0 .3rem;font-size:1.25rem}.deck-grid article>span{font-size:.82rem;opacity:.65}.deck-grid ul{padding:1rem 0 0;margin:1rem 0 0;border-top:1px solid var(--color-border);list-style:none;font-size:.78rem}
+.deck-modal{width:min(920px,calc(100vw - 2rem));max-width:none;max-height:calc(100dvh - 2rem);margin:auto;padding:0;border:1px solid color-mix(in srgb,currentColor 20%,transparent);border-radius:1rem;color:inherit;background:var(--color-background,#101010);box-shadow:0 24px 80px #000b;overflow:hidden}.deck-modal::backdrop{background:#000b;backdrop-filter:blur(4px)}.deck-modal__content{min-height:0;max-height:calc(100dvh - 2rem);overflow-y:auto}.deck-modal__content :global(.tcg-deck){margin:0}
+@media(max-width:760px){.catalog{width:calc(100% - 1rem)}.catalog form{grid-template-columns:1fr 1fr}.catalog form label:first-child{grid-column:1/-1}.deck-grid{grid-template-columns:1fr}}
+</style>

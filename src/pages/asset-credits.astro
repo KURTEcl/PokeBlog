@@ -1,0 +1,84 @@
+---
+import Base from "../layouts/Base.astro";
+
+const essentialsRepo =
+	"https://github.com/Manurocker95/Pokemon-Essentials-21-With-Unofficial-EBDX";
+---
+
+<Base
+	title="Asset credits"
+	description="Licenses for the interactive home scene graphics."
+>
+	<article class="credits">
+		<h1>Asset credits</h1>
+		<p>
+			The home room uses <strong>Pokémon Essentials</strong> graphics from a local
+			copy of{" "}
+			<a href={essentialsRepo} rel="noopener noreferrer">
+				Pokémon Essentials 21 with Unofficial EBDX
+			</a>
+			, imported via <code>pnpm import:essentials</code>. See{" "}
+			<a href="https://github.com/Manurocker95/Pokemon-Essentials-21-With-Unofficial-EBDX">
+				the asset repository
+			</a>{" "}
+			and <code>docs/ASSETS.md</code>.
+		</p>
+
+		<h2>Pokémon Essentials (local only)</h2>
+		<ul>
+			<li>
+				<strong>Source</strong> —{" "}
+				<a href={essentialsRepo} rel="noopener noreferrer">
+					github.com/Manurocker95/Pokemon-Essentials-21-With-Unofficial-EBDX
+				</a>
+			</li>
+			<li>
+				<strong>Tilesets</strong> — Poké Center interior, interiors, outside (
+				<code>Graphics/Tilesets/</code>).
+			</li>
+			<li>
+				<strong>Player</strong> — <code>trainer_POKEMONTRAINER_Red</code> (boy),
+				<code>trainer_POKEMONTRAINER_Leaf</code> (girl) (
+				<code>Graphics/Characters/</code>).
+			</li>
+			<li>
+				<strong>Props</strong> — PC, counter, healing machine, plant, door (cropped
+				from tilesets).
+			</li>
+			<li>
+				<strong>UI</strong> — on-screen control hints (
+				<code>Graphics/UI/Controls help/</code>).
+			</li>
+		</ul>
+		<p>
+			These assets are <em>not</em> redistributed in the PokeBlog repository. Obtain
+			them from the link above and keep them in gitignored <code>recursos/</code> on
+			your machine. Pokémon and related trademarks are property of Nintendo /
+			Creatures / GAME FREAK.
+		</p>
+
+		<h2>Multi-tile objects</h2>
+		<p>
+			Each object has a <code>footprint</code> in tiles (width×height). Origin is
+			top-left; collision covers all footprint cells.
+		</p>
+
+		<p><a href="/">Back to room</a> · <a href="/posts">Posts</a></p>
+	</article>
+</Base>
+
+<style>
+	.credits {
+		max-width: var(--content-width, 680px);
+		margin: 2rem auto;
+		padding: 0 1rem 3rem;
+	}
+	.credits h1 {
+		font-size: 1.75rem;
+		margin-bottom: 0.75rem;
+	}
+	.credits h2 {
+		margin-top: 1.5rem;
+		font-size: 1.15rem;
+	}
+</style>

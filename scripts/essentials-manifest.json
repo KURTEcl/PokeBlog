@@ -1,0 +1,455 @@
+{
+	"version": 5,
+	"tileSize": 32,
+	"columns": 8,
+	"tilesets": [
+		{
+			"id": "poke-center-interior",
+			"name": "Poké Center interior",
+			"source": "Tilesets/Poke Centre interior.png",
+			"dest": "tiles/poke-center-interior.png",
+			"rows": 40
+		},
+		{
+			"id": "interior-general",
+			"name": "Interior general",
+			"source": "Tilesets/Interior general.png",
+			"dest": "tiles/interior-general.png",
+			"rows": 251
+		},
+		{
+			"id": "mart-interior",
+			"name": "Mart interior",
+			"source": "Tilesets/Mart interior.png",
+			"dest": "tiles/mart-interior.png",
+			"rows": 18
+		},
+		{
+			"id": "gyms-interior",
+			"name": "Gyms interior",
+			"source": "Tilesets/Gyms interior.png",
+			"dest": "tiles/gyms-interior.png",
+			"rows": 144
+		},
+		{
+			"id": "outside",
+			"name": "Outside",
+			"source": "Tilesets/Outside.png",
+			"dest": "tiles/outside.png",
+			"rows": 502
+		}
+	],
+	"players": [
+		{
+			"id": "boy-charset",
+			"name": "Boy",
+			"source": "Characters/trainer_POKEMONTRAINER_Red.png",
+			"dest": "player/boy-charset.png"
+		},
+		{
+			"id": "girl-charset",
+			"name": "Girl",
+			"source": "Characters/trainer_POKEMONTRAINER_Leaf.png",
+			"dest": "player/girl-charset.png"
+		}
+	],
+	"ui": [
+		{
+			"id": "help-arrows",
+			"name": "D-pad arrows",
+			"source": "UI/Controls help/help_arrows.png",
+			"dest": "ui/help-arrows.png"
+		},
+		{
+			"id": "help-action",
+			"name": "Action key",
+			"source": "UI/Controls help/help_actionkey.png",
+			"dest": "ui/help-action.png"
+		},
+		{
+			"id": "help-back",
+			"name": "Back key",
+			"source": "UI/Controls help/help_backkey.png",
+			"dest": "ui/help-back.png"
+		}
+	],
+	"props": [
+		{
+			"id": "pc",
+			"name": "PC",
+			"sourceTileset": "poke-center-interior",
+			"col": 7,
+			"row": 27,
+			"wTiles": 1,
+			"hTiles": 2,
+			"dest": "objects/pc.png",
+			"tags": ["interact", "tech"],
+			"collision": true
+		},
+		{
+			"id": "plant",
+			"name": "Plant",
+			"sourceTileset": "poke-center-interior",
+			"col": 6,
+			"row": 27,
+			"wTiles": 1,
+			"hTiles": 1,
+			"dest": "objects/plant.png",
+			"tags": ["deco"],
+			"collision": true
+		},
+		{
+			"id": "counter",
+			"name": "Counter",
+			"sourceTileset": "poke-center-interior",
+			"col": 0,
+			"row": 28,
+			"wTiles": 2,
+			"hTiles": 1,
+			"dest": "objects/counter.png",
+			"tags": ["interact"],
+			"collision": true
+		},
+		{
+			"id": "counter-wide",
+			"name": "Counter wide",
+			"sourceTileset": "poke-center-interior",
+			"col": 0,
+			"row": 28,
+			"wTiles": 5,
+			"hTiles": 1,
+			"dest": "objects/counter-wide.png",
+			"tags": ["interact"],
+			"collision": true
+		},
+		{
+			"id": "healing-machine",
+			"name": "Healing machine",
+			"sourceTileset": "poke-center-interior",
+			"col": 5,
+			"row": 24,
+			"wTiles": 2,
+			"hTiles": 2,
+			"dest": "objects/healing-machine.png",
+			"tags": ["interact"],
+			"collision": true
+		},
+		{
+			"id": "heal-cross",
+			"name": "Heal cross panel",
+			"sourceTileset": "poke-center-interior",
+			"col": 7,
+			"row": 25,
+			"wTiles": 1,
+			"hTiles": 1,
+			"dest": "objects/heal-cross.png",
+			"tags": ["deco"],
+			"collision": true
+		},
+		{
+			"id": "mat",
+			"name": "Entrance mat",
+			"sourceTileset": "poke-center-interior",
+			"col": 0,
+			"row": 21,
+			"wTiles": 3,
+			"hTiles": 1,
+			"dest": "objects/mat.png",
+			"tags": ["deco", "entrance"],
+			"collision": false
+		},
+		{
+			"id": "wall-tv",
+			"name": "Wall screen",
+			"sourceTileset": "poke-center-interior",
+			"col": 0,
+			"row": 6,
+			"wTiles": 1,
+			"hTiles": 2,
+			"dest": "objects/wall-tv.png",
+			"tags": ["deco"],
+			"collision": true
+		},
+		{
+			"id": "wall-map",
+			"name": "Wall map",
+			"sourceTileset": "poke-center-interior",
+			"col": 2,
+			"row": 6,
+			"wTiles": 1,
+			"hTiles": 2,
+			"dest": "objects/wall-map.png",
+			"tags": ["interact"],
+			"collision": true
+		},
+		{
+			"id": "wall-cabinet",
+			"name": "Wall cabinet",
+			"sourceTileset": "poke-center-interior",
+			"col": 3,
+			"row": 6,
+			"wTiles": 1,
+			"hTiles": 2,
+			"dest": "objects/wall-cabinet.png",
+			"tags": ["deco"],
+			"collision": true
+		},
+		{
+			"id": "sofa",
+			"name": "Sofa",
+			"sourceTileset": "poke-center-interior",
+			"col": 2,
+			"row": 29,
+			"wTiles": 3,
+			"hTiles": 2,
+			"dest": "objects/sofa.png",
+			"tags": ["deco", "furniture"],
+			"collision": true
+		},
+		{
+			"id": "glass-table",
+			"name": "Glass table",
+			"sourceTileset": "poke-center-interior",
+			"col": 5,
+			"row": 29,
+			"wTiles": 2,
+			"hTiles": 2,
+			"dest": "objects/glass-table.png",
+			"tags": ["deco", "furniture"],
+			"collision": true
+		},
+		{
+			"id": "poster",
+			"name": "Poster",
+			"sourceTileset": "poke-center-interior",
+			"col": 2,
+			"row": 16,
+			"wTiles": 1,
+			"hTiles": 1,
+			"dest": "objects/poster.png",
+			"tags": ["interact"],
+			"collision": true
+		},
+		{
+			"id": "pokeball-floor",
+			"name": "Poké Ball floor emblem",
+			"sourceTileset": "poke-center-interior",
+			"col": 0,
+			"row": 15,
+			"wTiles": 2,
+			"hTiles": 2,
+			"dest": "objects/pokeball-floor.png",
+			"tags": ["deco", "floor"],
+			"collision": false
+		},
+		{
+			"id": "statue",
+			"name": "Statue",
+			"sourceTileset": "poke-center-interior",
+			"col": 3,
+			"row": 31,
+			"wTiles": 1,
+			"hTiles": 2,
+			"dest": "objects/statue.png",
+			"tags": ["deco"],
+			"collision": true
+		},
+		{
+			"id": "server-rack",
+			"name": "Server rack",
+			"sourceTileset": "poke-center-interior",
+			"col": 6,
+			"row": 31,
+			"wTiles": 1,
+			"hTiles": 2,
+			"dest": "objects/server-rack.png",
+			"tags": ["tech"],
+			"collision": true
+		},
+		{
+			"id": "plant-small",
+			"name": "Small plant",
+			"sourceTileset": "poke-center-interior",
+			"col": 5,
+			"row": 34,
+			"wTiles": 1,
+			"hTiles": 1,
+			"dest": "objects/plant-small.png",
+			"tags": ["deco"],
+			"collision": true
+		},
+		{
+			"id": "door",
+			"name": "Door",
+			"sourceTileset": "interior-general",
+			"col": 2,
+			"row": 2,
+			"wTiles": 1,
+			"hTiles": 2,
+			"dest": "objects/door.png",
+			"tags": ["door"],
+			"collision": false
+		},
+		{
+			"id": "bed",
+			"name": "Bed",
+			"sourceTileset": "interior-general",
+			"col": 0,
+			"row": 14,
+			"wTiles": 2,
+			"hTiles": 2,
+			"dest": "objects/bed.png",
+			"tags": ["deco", "furniture"],
+			"collision": true
+		},
+		{
+			"id": "chair",
+			"name": "Chair",
+			"sourceTileset": "interior-general",
+			"col": 4,
+			"row": 10,
+			"wTiles": 1,
+			"hTiles": 1,
+			"dest": "objects/chair.png",
+			"tags": ["deco", "furniture"],
+			"collision": true
+		},
+		{
+			"id": "tv",
+			"name": "TV",
+			"sourceTileset": "interior-general",
+			"col": 6,
+			"row": 8,
+			"wTiles": 1,
+			"hTiles": 1,
+			"dest": "objects/tv.png",
+			"tags": ["interact", "furniture"],
+			"collision": true
+		},
+		{
+			"id": "bookshelf-home",
+			"name": "Bookshelf",
+			"sourceTileset": "interior-general",
+			"col": 0,
+			"row": 10,
+			"wTiles": 2,
+			"hTiles": 2,
+			"dest": "objects/bookshelf-home.png",
+			"tags": ["deco", "furniture"],
+			"collision": true
+		},
+		{
+			"id": "table-home",
+			"name": "Table",
+			"sourceTileset": "interior-general",
+			"col": 2,
+			"row": 12,
+			"wTiles": 2,
+			"hTiles": 1,
+			"dest": "objects/table-home.png",
+			"tags": ["deco", "furniture"],
+			"collision": true
+		},
+		{
+			"id": "mart-counter",
+			"name": "Mart counter",
+			"sourceTileset": "mart-interior",
+			"col": 0,
+			"row": 10,
+			"wTiles": 4,
+			"hTiles": 1,
+			"dest": "objects/mart-counter.png",
+			"tags": ["interact", "shop"],
+			"collision": true
+		},
+		{
+			"id": "mart-shelf",
+			"name": "Mart shelf",
+			"sourceTileset": "mart-interior",
+			"col": 4,
+			"row": 4,
+			"wTiles": 2,
+			"hTiles": 2,
+			"dest": "objects/mart-shelf.png",
+			"tags": ["deco", "shop"],
+			"collision": true
+		},
+		{
+			"id": "mart-register",
+			"name": "Mart register",
+			"sourceTileset": "mart-interior",
+			"col": 6,
+			"row": 10,
+			"wTiles": 1,
+			"hTiles": 1,
+			"dest": "objects/mart-register.png",
+			"tags": ["interact", "shop"],
+			"collision": true
+		},
+		{
+			"id": "gym-mat",
+			"name": "Gym battle mat",
+			"sourceTileset": "gyms-interior",
+			"col": 0,
+			"row": 15,
+			"wTiles": 4,
+			"hTiles": 3,
+			"dest": "objects/gym-mat.png",
+			"tags": ["deco", "gym", "floor"],
+			"collision": false
+		},
+		{
+			"id": "gym-statue",
+			"name": "Gym statue",
+			"sourceTileset": "gyms-interior",
+			"col": 3,
+			"row": 27,
+			"wTiles": 2,
+			"hTiles": 2,
+			"dest": "objects/gym-statue.png",
+			"tags": ["deco", "gym"],
+			"collision": true
+		},
+		{
+			"id": "gym-bar",
+			"name": "Gym railing",
+			"sourceTileset": "gyms-interior",
+			"col": 0,
+			"row": 6,
+			"wTiles": 2,
+			"hTiles": 1,
+			"dest": "objects/gym-bar.png",
+			"tags": ["deco", "gym"],
+			"collision": true
+		},
+		{
+			"id": "gym-counter",
+			"name": "Gym desk",
+			"sourceTileset": "gyms-interior",
+			"col": 0,
+			"row": 28,
+			"wTiles": 3,
+			"hTiles": 1,
+			"dest": "objects/gym-counter.png",
+			"tags": ["interact", "gym"],
+			"collision": true
+		}
+	],
+	"audio": [
+		{
+			"id": "player-bump",
+			"source": "SE/Player bump.ogg",
+			"dest": "audio/player-bump.ogg"
+		},
+		{
+			"id": "gui-menu-open",
+			"source": "SE/GUI menu open.ogg",
+			"dest": "audio/gui-menu-open.ogg"
+		},
+		{
+			"id": "door-enter",
+			"source": "SE/Door enter.ogg",
+			"dest": "audio/door-enter.ogg"
+		}
+	]
+}

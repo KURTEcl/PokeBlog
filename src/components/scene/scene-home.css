@@ -1,0 +1,386 @@
+.scene-page,
+.scene-page body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	overflow: hidden;
+}
+
+.scene-shell {
+	position: fixed;
+	left: 0;
+	right: 0;
+	z-index: 1;
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	background: #0e0e14;
+	color: #f2f2f2;
+	overflow: hidden;
+	padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);
+	-webkit-user-select: none;
+	user-select: none;
+	-webkit-touch-callout: none;
+}
+
+.scene-canvas-host {
+	position: relative;
+	flex: 1;
+	min-height: 0;
+	width: 100%;
+	background: #000000;
+	image-rendering: pixelated;
+	overflow: hidden;
+	-webkit-user-select: none;
+	user-select: none;
+	-webkit-touch-callout: none;
+}
+
+.scene-canvas-host canvas {
+	image-rendering: pixelated;
+	opacity: 0;
+	transition: opacity 180ms ease;
+	-webkit-user-select: none;
+	user-select: none;
+	-webkit-touch-callout: none;
+}
+
+.scene-canvas-host.is-ready canvas {
+	opacity: 1;
+}
+
+.scene-loader {
+	position: absolute;
+	inset: 0;
+	z-index: 6;
+	display: grid;
+	place-items: center;
+	background: #0e0e14;
+}
+
+.scene-loader-card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1rem;
+	padding: 1.5rem;
+	text-align: center;
+}
+
+.scene-loader-logo {
+	width: 4.5rem;
+	height: 4.5rem;
+	object-fit: contain;
+	image-rendering: pixelated;
+}
+
+.scene-loader-logo--placeholder {
+	display: grid;
+	place-items: center;
+	border-radius: 1rem;
+	background: #1a1a24;
+	font-size: 2rem;
+	color: #8eb7ff;
+	animation: scene-loader-spin 1.2s linear infinite;
+}
+
+.scene-loader-message {
+	margin: 0;
+	max-width: 16rem;
+	color: #d8d8e8;
+	font-size: 0.95rem;
+	letter-spacing: 0.01em;
+}
+
+.scene-loader-dots {
+	display: flex;
+	gap: 0.35rem;
+}
+
+.scene-loader-dots span {
+	width: 0.45rem;
+	height: 0.45rem;
+	border-radius: 999px;
+	background: #6aa3ff;
+	animation: scene-loader-pulse 1s ease-in-out infinite;
+}
+
+.scene-loader-dots span:nth-child(2) {
+	animation-delay: 0.15s;
+}
+
+.scene-loader-dots span:nth-child(3) {
+	animation-delay: 0.3s;
+}
+
+@keyframes scene-loader-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes scene-loader-pulse {
+	0%,
+	100% {
+		opacity: 0.35;
+		transform: translateY(0);
+	}
+	50% {
+		opacity: 1;
+		transform: translateY(-2px);
+	}
+}
+
+.scene-controls-bar {
+	position: relative;
+	z-index: 8;
+	flex: 0 0 auto;
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 0.5rem 1rem max(0.65rem, env(safe-area-inset-bottom, 0px));
+	background: linear-gradient(180deg, #1a1a24 0%, #12121a 100%);
+	border-top: 1px solid #2a2a36;
+	touch-action: none;
+	-webkit-user-select: none;
+	user-select: none;
+	-webkit-touch-callout: none;
+}
+
+/* Game Boy Advance–style D-pad (HTML overlay, not Phaser) */
+.gba-dpad {
+	display: grid;
+	grid-template-columns: 46px 46px 46px;
+	grid-template-rows: 46px 46px 46px;
+	flex-shrink: 0;
+	filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.45));
+}
+
+.gba-dpad__btn {
+	border: 0;
+	margin: 0;
+	padding: 0;
+	background: linear-gradient(160deg, #8e8ea0 0%, #6d6d80 45%, #56566a 100%);
+	box-shadow:
+		inset 1px 1px 0 rgba(255, 255, 255, 0.28),
+		inset -1px -1px 0 rgba(0, 0, 0, 0.22);
+	touch-action: none;
+	-webkit-user-select: none;
+	user-select: none;
+	-webkit-touch-callout: none;
+	-webkit-tap-highlight-color: transparent;
+	cursor: pointer;
+}
+
+.gba-dpad__btn:active,
+.gba-dpad__btn.is-pressed {
+	background: linear-gradient(160deg, #6d6d80 0%, #56566a 45%, #454555 100%);
+	box-shadow:
+		inset -1px -1px 0 rgba(255, 255, 255, 0.12),
+		inset 2px 2px 4px rgba(0, 0, 0, 0.35);
+}
+
+.gba-dpad__btn--up {
+	grid-area: 1 / 2;
+	border-radius: 10px 10px 3px 3px;
+}
+
+.gba-dpad__btn--left {
+	grid-area: 2 / 1;
+	border-radius: 10px 3px 3px 10px;
+}
+
+.gba-dpad__center {
+	grid-area: 2 / 2;
+	background: linear-gradient(160deg, #7a7a8e 0%, #5e5e70 100%);
+	box-shadow:
+		inset 1px 1px 0 rgba(255, 255, 255, 0.2),
+		inset -1px -1px 0 rgba(0, 0, 0, 0.2);
+	pointer-events: none;
+}
+
+.gba-dpad__btn--right {
+	grid-area: 2 / 3;
+	border-radius: 3px 10px 10px 3px;
+}
+
+.gba-dpad__btn--down {
+	grid-area: 3 / 2;
+	border-radius: 3px 3px 10px 10px;
+}
+
+/* GBA A / B cluster (B lower-left, A upper-right) */
+.gba-face-buttons {
+	position: relative;
+	width: 7.5rem;
+	height: 6.5rem;
+	flex-shrink: 0;
+}
+
+.gba-btn {
+	position: absolute;
+	width: 3.35rem;
+	height: 3.35rem;
+	border: 2px solid #3f3858;
+	border-radius: 50%;
+	background: linear-gradient(155deg, #b8a8d8 0%, #8f7fb8 42%, #6e5f98 100%);
+	box-shadow:
+		0 3px 0 #3f3858,
+		inset 0 1px 0 rgba(255, 255, 255, 0.35);
+	color: #2a2340;
+	font-family: system-ui, sans-serif;
+	font-size: 0.95rem;
+	font-weight: 800;
+	letter-spacing: 0.02em;
+	touch-action: none;
+	-webkit-user-select: none;
+	user-select: none;
+	-webkit-touch-callout: none;
+	-webkit-tap-highlight-color: transparent;
+	cursor: pointer;
+}
+
+.gba-btn::before {
+	display: block;
+	line-height: calc(3.35rem - 4px);
+	text-align: center;
+	pointer-events: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.gba-btn--b::before {
+	content: "B";
+}
+
+.gba-btn--a::before {
+	content: "A";
+}
+
+.gba-btn--b {
+	left: 0;
+	bottom: 0.15rem;
+}
+
+.gba-btn--a {
+	right: 0;
+	top: 0;
+}
+
+.gba-btn:active {
+	transform: translateY(2px);
+	box-shadow:
+		0 1px 0 #3f3858,
+		inset 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+.scene-error {
+	position: absolute;
+	bottom: 6rem;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 4;
+	padding: 0.5rem 0.75rem;
+	border-radius: 0.4rem;
+	background: #7a2020;
+	font-size: 0.85rem;
+}
+
+.scene-panel {
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 5;
+	display: flex;
+	flex-direction: column;
+	width: min(560px, 100%);
+	height: 100%;
+	background: #14141c;
+	border-left: 1px solid #2a2a36;
+	transform: translateX(105%);
+	transition: transform 180ms ease;
+}
+
+.scene-panel.is-open {
+	transform: translateX(0);
+}
+
+.scene-panel-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 1rem 1rem 0.75rem;
+	border-bottom: 1px solid #2a2a36;
+}
+
+.scene-panel-header h2 {
+	margin: 0;
+	font-size: 1.1rem;
+}
+
+.scene-panel-header button {
+	border: 0;
+	border-radius: 0.4rem;
+	padding: 0.4rem 0.7rem;
+	background: #2a2a36;
+	color: #fff;
+}
+
+.scene-panel-body {
+	flex: 1;
+	overflow: auto;
+	padding: 1rem;
+	-webkit-user-select: text;
+	user-select: text;
+	-webkit-touch-callout: default;
+}
+
+.scene-panel-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.scene-panel-list li {
+	padding: 0.75rem 0;
+	border-bottom: 1px solid #2a2a36;
+}
+
+.scene-panel-list a {
+	color: #8eb7ff;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.scene-panel-list p {
+	margin: 0.25rem 0 0;
+	color: #a0a0b0;
+	font-size: 0.85rem;
+}
+
+.scene-panel-canonical {
+	margin-top: 1.25rem;
+}
+
+.scene-panel-canonical a {
+	color: #c8c8d8;
+}
+
+@media (max-width: 720px) {
+	.scene-panel {
+		top: auto;
+		bottom: 0;
+		width: 100%;
+		height: min(70dvh, 520px);
+		border-left: 0;
+		border-top: 1px solid #2a2a36;
+		transform: translateY(105%);
+		border-radius: 1rem 1rem 0 0;
+	}
+
+	.scene-panel.is-open {
+		transform: translateY(0);
+	}
+}

@@ -1,0 +1,16 @@
+[Unit]
+Description=PokeBlog (EmDash + Phaser home)
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/kurte-tcg/apps/tcg-kurte-cl
+Environment=HOST=127.0.0.1
+Environment=PORT=4321
+EnvironmentFile=/home/kurte-tcg/apps/tcg-kurte-cl/.env
+ExecStart=/home/kurte-tcg/.local/node-v22/bin/node ./dist/server/entry.mjs
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

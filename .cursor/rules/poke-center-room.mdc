@@ -1,0 +1,12 @@
+---
+description: Pokémon Center home room — use documented reference, don't mix RSE crops
+globs: packages/scene-core/src/demo-scene.ts,scripts/essentials-manifest.json,docs/POKE_CENTER.md
+---
+
+# Pokémon Center home
+
+- Visual source of truth: `recursos/tileset-juego/pokemoncenter.png` → `essentials/rooms/poke-center.png`.
+- Full layout / mat / walls / no south door sprite: `docs/POKE_CENTER.md`.
+- Do **not** overlay Essentials RSE prop crops on the home room (different art; caused cut ornaments).
+- Bottom exit = red mat only (`y=8`, around `x=7..8`).
+- Bump `DEMO_ASSET_PACK` + re-import when the room art or collision map changes; refresh DB if home stays stale.

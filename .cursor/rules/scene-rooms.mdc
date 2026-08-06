@@ -1,0 +1,13 @@
+---
+description: Scene room types, templates, and authoring conventions
+globs: packages/scene-core/**,packages/plugin-scene-builder/**,docs/SCENE_ROOMS.md,docs/POKE_CENTER.md
+---
+
+# Scene rooms
+
+- Home Poké Center = backdrop FR/LG PNG — see `poke-center-room.mdc` and `docs/POKE_CENTER.md`.
+- New interiors = tileset RSE (`tiled` mode), variable grid, explicit collisions.
+- Do not assume 15×10 grid except home demo.
+- Use `createSceneFromTemplate()` for new admin scenes; bump `DEMO_ASSET_PACK` only for home changes.
+- Project IDs use `center` (American English); Essentials source paths keep `Centre` spelling.
+- Gyms may have interior wall sections — paint walls + sync collisions, not a single enclosed box.

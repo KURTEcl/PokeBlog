@@ -1,0 +1,13 @@
+---
+description: EmDash + Astro conventions for PokeBlog
+alwaysApply: true
+---
+
+# EmDash basics
+
+- CMS content pages are server-rendered; do not use `getStaticPaths()` for CMS routes.
+- Image fields are objects `{ src, alt }`; use `<Image image={...} />` from `emdash/ui`.
+- `entry.id` is the slug; `entry.data.id` is the database ULID.
+- Taxonomy query names must match seed `"name"` exactly (e.g. `category`).
+- Prefer `emdash-docs` MCP / Context7 before changing schema, hooks, or Portable Text blocks.
+- Seed file: `seed/seed.json`.

@@ -1,0 +1,39 @@
+# Dependencies & build
+node_modules/
+dist/
+.astro/
+.emdash/
+*.tsbuildinfo
+
+# EmDash runtime
+data.db
+data.db-shm
+data.db-wal
+uploads/
+.env
+.env.*
+!.env.example
+
+# Local Pokémon Essentials dump (never commit)
+recursos/
+
+# Proprietary / BYO scene art (copy per docs/ASSETS.md)
+public/scene-assets/essentials/
+public/scene-assets/local/
+public/scene-assets/source/
+
+# Agent / editor local
+.serena/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/*
+!.vscode/mcp.json
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
