@@ -149,3 +149,9 @@ If images 404, re-check `recursos/` layout and run `pnpm import:essentials` agai
 ## Legal note
 
 Pokémon Essentials and Nintendo-derived art must stay on your machine. Do not commit `recursos/` or `public/scene-assets/essentials/` to git. See [docs/ASSET_LICENSES.md](./ASSET_LICENSES.md) and `/asset-credits`.
+
+## Production notes
+
+- **Scene assets on the server:** `pnpm import:essentials` needs `sharp`, which may fail on older Linux x64 hosts. Workaround: run the import on a dev machine, then copy `public/scene-assets/essentials/` to the server (that folder stays gitignored).
+- **Database:** `data.db` and `uploads/` are preserved across code deploys when you exclude them from rsync or `git pull`.
+- **Secrets:** keep server `.env` out of git; generate once with `pnpm exec emdash secrets generate --write .env`.
