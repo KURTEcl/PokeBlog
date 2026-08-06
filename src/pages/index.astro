@@ -2,7 +2,6 @@
 import { getSiteSettings } from "emdash";
 import { EmDashHead, EmDashBodyStart, EmDashBodyEnd } from "emdash/ui";
 import { createPublicPageContext } from "emdash/page";
-import { Font } from "astro:assets";
 import { createPokemonRoomScene, type SceneDefinition } from "@poke-emdash/scene-core";
 import SceneHome from "../components/scene/SceneHome";
 import { resolveBlogSiteIdentity } from "../utils/site-identity";
@@ -43,7 +42,6 @@ const pageCtx = createPublicPageContext({
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 		<title>{fullTitle}</title>
 		<meta name="description" content={siteTagline ?? ""} />
-		<Font cssVariable="--font-body" />
 		<EmDashHead page={pageCtx} />
 		<style is:global>
 			html.scene-page,
@@ -53,6 +51,9 @@ const pageCtx = createPublicPageContext({
 				margin: 0;
 				overflow: hidden;
 				background: #0e0e14;
+				font-family: var(--font-body, system-ui, sans-serif);
+				-webkit-font-smoothing: antialiased;
+				-moz-osx-font-smoothing: grayscale;
 			}
 
 			/* Instant boot loader — paints before JS/React bundle */
@@ -64,6 +65,7 @@ const pageCtx = createPublicPageContext({
 				place-items: center;
 				background: #0e0e14;
 				color: #d8d8e8;
+				font-family: var(--font-body, system-ui, sans-serif);
 			}
 
 			#scene-boot-loader .scene-loader-card {
