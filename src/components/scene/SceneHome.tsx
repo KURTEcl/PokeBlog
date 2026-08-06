@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
 	createPokemonRoomScene,
+	DESKTOP_SCENE_ZOOM,
 	MOBILE_SCENE_ZOOM,
 	type ContentTarget,
 	type PanelContent,
@@ -8,6 +9,14 @@ import {
 } from "@poke-emdash/scene-core";
 import { loadPanelContent } from "./contentAdapters";
 import { createPhaserAdapter } from "./phaserAdapter";
+import {
+	readSceneDebugEnabled,
+	readSceneDebugZoom,
+	SCENE_DEBUG_ZOOM_LEVELS,
+	writeSceneDebugEnabled,
+	writeSceneDebugZoom,
+	type SceneDebugZoom,
+} from "./sceneDebug";
 import { playSceneSfx, SCENE_SFX } from "./sceneAudio";
 import SceneLoader from "./SceneLoader";
 import { DEFAULT_SCENE_LOADING } from "./sceneLoading";
@@ -40,12 +49,39 @@ export default function SceneHome({ initialScene = null }: Props) {
 			window.matchMedia("(max-width: 720px)").matches
 		);
 	});
+	const [sceneDebug, setSceneDebug] = useState(() => readSceneDebugEnabled());
+	const [debugZoom, setDebugZoom] = useState<SceneDebugZoom>(() =>
+		readSceneDebugZoom(DESKTOP_SCENE_ZOOM),
+	);
 	const [sceneReady, setSceneReady] = useState(false);
 	const visualViewport = useVisualViewport();
 	const panelOpenRef = useRef(false);
 	const loadingPanelRef = useRef(false);
 	panelOpenRef.current = panelOpen;
 	loadingPanelRef.current = loadingPanel;
+
+	const sceneScale = touchControls
+		? MOBILE_SCENE_ZOOM
+		: sceneDebug
+			? debugZoom
+			: DESKTOP_SCENE_ZOOM;
+
+	const applySceneScale = useCallback(() => {
+		adapterRef.current?.setScaleMultiplier(sceneScale);
+	}, [sceneScale]);
+
+	const toggleSceneDebug = useCallback(() => {
+		setSceneDebug((prev) => {
+			const next = !prev;
+			writeSceneDebugEnabled(next);
+			return next;
+		});
+	}, []);
+
+	const selectDebugZoom = useCallback((zoom: SceneDebugZoom) => {
+		setDebugZoom(zoom);
+		writeSceneDebugZoom(zoom);
+	}, []);
 
 	const closePanel = () => {
 		if (!panelOpenRef.current) return;
@@ -111,8 +147,31 @@ export default function SceneHome({ initialScene = null }: Props) {
 	}, []);
 
 	useEffect(() => {
-		adapterRef.current?.setScaleMultiplier(touchControls ? MOBILE_SCENE_ZOOM : 1);
-	}, [touchControls]);
+		applySceneScale();
+	}, [applySceneScale]);
+
+	useEffect(() => {
+		if (touchControls) return;
+		const onKey = (event: KeyboardEvent) => {
+			if (panelOpenRef.current) return;
+			const target = event.target;
+			if (
+				target instanceof HTMLElement &&
+				(target.isContentEditable ||
+					target.tagName === "INPUT" ||
+					target.tagName === "TEXTAREA" ||
+					target.tagName === "SELECT")
+			) {
+				return;
+			}
+			if (event.key === "`" || (event.key === "d" && event.shiftKey && event.ctrlKey)) {
+				event.preventDefault();
+				toggleSceneDebug();
+			}
+		};
+		window.addEventListener("keydown", onKey);
+		return () => window.removeEventListener("keydown", onKey);
+	}, [touchControls, toggleSceneDebug]);
 
 	useEffect(() => {
 		const host = hostRef.current;
@@ -138,7 +197,7 @@ export default function SceneHome({ initialScene = null }: Props) {
 		void adapter
 			.mount(host, scene)
 			.then(() => {
-				adapter.setScaleMultiplier(touchControls ? MOBILE_SCENE_ZOOM : 1);
+				adapter.setScaleMultiplier(sceneScale);
 				clearLoadTimer = finishLoading();
 			})
 			.catch((err) => {
@@ -283,6 +342,32 @@ export default function SceneHome({ initialScene = null }: Props) {
 		>
 			<div className={`scene-canvas-host ${sceneReady ? "is-ready" : ""}`} ref={hostRef}>
 				{!sceneReady && <SceneLoader config={DEFAULT_SCENE_LOADING} />}
+				{!touchControls && sceneDebug && (
+					<div className="scene-debug-bar" aria-label="Zoom de escena (debug)">
+						<span className="scene-debug-bar__label">DEBUG</span>
+						<div className="scene-debug-bar__zooms" role="group" aria-label="Escala">
+							{SCENE_DEBUG_ZOOM_LEVELS.map((level) => (
+								<button
+									key={level}
+									type="button"
+									className={debugZoom === level ? "is-active" : ""}
+									aria-pressed={debugZoom === level}
+									onClick={() => selectDebugZoom(level)}
+								>
+									×{level}
+								</button>
+							))}
+						</div>
+						<button
+							type="button"
+							className="scene-debug-bar__close"
+							aria-label="Salir de debug"
+							onClick={toggleSceneDebug}
+						>
+							×
+						</button>
+					</div>
+				)}
 			</div>
 
 			{touchControls && (

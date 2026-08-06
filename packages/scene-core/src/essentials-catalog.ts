@@ -120,6 +120,9 @@ export const UI_CONTROL_SIZES = {
 /** Fixed CSS integer scale for the Phaser canvas on touch devices. */
 export const MOBILE_SCENE_ZOOM = 2;
 
+/** Default CSS integer scale for the Phaser canvas on desktop. */
+export const DESKTOP_SCENE_ZOOM = 3;
+
 export function catalogTilesetById(id: string): CatalogTileset | undefined {
 	return ALL_TILESETS.find((t) => t.id === id);
 }

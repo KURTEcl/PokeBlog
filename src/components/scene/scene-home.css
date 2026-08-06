@@ -49,6 +49,68 @@
 	opacity: 1;
 }
 
+.scene-debug-bar {
+	position: absolute;
+	top: 0.5rem;
+	right: 0.5rem;
+	z-index: 9;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.35rem 0.45rem;
+	border-radius: 0.5rem;
+	border: 1px solid rgba(255, 255, 255, 0.14);
+	background: rgba(8, 8, 14, 0.82);
+	backdrop-filter: blur(6px);
+	font-family: var(--font-mono, ui-monospace, monospace);
+	font-size: 0.72rem;
+	color: #c8d4ff;
+	pointer-events: auto;
+}
+
+.scene-debug-bar__label {
+	padding: 0.1rem 0.35rem;
+	border-radius: 0.25rem;
+	background: rgba(106, 163, 255, 0.2);
+	color: #9ec5ff;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+}
+
+.scene-debug-bar__zooms {
+	display: flex;
+	gap: 0.25rem;
+}
+
+.scene-debug-bar__zooms button,
+.scene-debug-bar__close {
+	min-width: 2rem;
+	padding: 0.2rem 0.35rem;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	border-radius: 0.35rem;
+	background: rgba(255, 255, 255, 0.04);
+	color: inherit;
+	font: inherit;
+	cursor: pointer;
+}
+
+.scene-debug-bar__zooms button:hover,
+.scene-debug-bar__close:hover {
+	background: rgba(255, 255, 255, 0.1);
+}
+
+.scene-debug-bar__zooms button.is-active {
+	border-color: #6aa3ff;
+	background: rgba(106, 163, 255, 0.28);
+	color: #fff;
+}
+
+.scene-debug-bar__close {
+	min-width: 1.6rem;
+	font-size: 0.95rem;
+	line-height: 1;
+}
+
 .scene-loader {
 	position: absolute;
 	inset: 0;
